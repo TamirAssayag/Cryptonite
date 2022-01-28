@@ -1,5 +1,3 @@
-setPageTitle("Home");
-
 function drawCoinsCards() {
   let cards = "";
   getLS("coinsList").map((coin, index) => {

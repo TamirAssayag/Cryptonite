@@ -1,1 +1,0 @@
-setPageTitle("About");

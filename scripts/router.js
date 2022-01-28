@@ -8,6 +8,7 @@ async function loadPage(page, oldPage) {
   // Setting our template to html
   const contentDiv = document.getElementById("app");
   contentDiv.innerHTML = await fetchHtmlAsText(`../pages/${page}/${page}.html`);
+  document.title = `Cryptonite | ${capitallize(page)}`;
 
   // Removing old script
   if (document.getElementById("script_" + oldPage)) {
@@ -21,7 +22,9 @@ async function loadPage(page, oldPage) {
   script.id = "script_" + page;
   contentDiv.appendChild(script);
 
-  document.dispatchEvent(new CustomEvent("route-update", { detail: { to: page, from: oldPage } }));
+  document.dispatchEvent(
+    new CustomEvent("route-update", { detail: { to: page, from: oldPage } })
+  );
 }
 
 const Router = {

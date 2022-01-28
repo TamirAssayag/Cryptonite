@@ -19,8 +19,8 @@ html body {
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
   gap: 0.4rem;
   color: #115571 !important;
   cursor: pointer;
@@ -38,7 +38,7 @@ html body {
   left: 0;
   background-color: #000;
   -webkit-transform: scaleX(0);
-          transform: scaleX(0);
+  transform: scaleX(0);
   -webkit-transition: -webkit-transform 0.3s ease;
   transition: -webkit-transform 0.3s ease;
   transition: transform 0.3s ease;
@@ -47,7 +47,7 @@ html body {
 
 .navbar ul .nav-item:hover::before {
   -webkit-transform: scaleX(1);
-          transform: scaleX(1);
+  transform: scaleX(1);
   font-size: 5rem !important;
 }
 
@@ -71,7 +71,7 @@ html body {
   top: 50%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
   font-size: 15rem;
   z-index: 0;
   text-shadow: #042a3a 0 0 10px;
@@ -94,7 +94,7 @@ html body {
   position: relative;
   width: 100%;
   -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
   mix-blend-mode: color-dodge;
   opacity: 0.4;
   height: 100%;

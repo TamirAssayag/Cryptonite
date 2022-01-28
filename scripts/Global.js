@@ -30,11 +30,6 @@ navLinkEl.forEach((link) => {
   });
 });
 
-// Setting page title of current page
-function setPageTitle(title) {
-  document.title = `Cryptonite | ${title}`;
-}
-
 let rellax = new Rellax(".rellax", {
   horizontal: true,
 
