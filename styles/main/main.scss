@@ -1,7 +1,12 @@
 $primary-color: #115571;
 
 html body {
+  background-color: #f8f9fa;
   scroll-behavior: smooth;
+}
+
+.input-group-text {
+  height: 100%;
 }
 
 #app {
