@@ -6,6 +6,7 @@ async function fetchHtmlAsText(url) {
 
 async function loadPage(page, oldPage) {
   // Setting our template to html
+  const head = document.getElementsByTagName("head")[0];
   const contentDiv = document.getElementById("app");
   contentDiv.innerHTML = await fetchHtmlAsText(`../pages/${page}/${page}.html`);
   document.title = `Cryptonite | ${capitallize(page)}`;
@@ -21,6 +22,8 @@ async function loadPage(page, oldPage) {
   script.type = "text/javascript";
   script.id = "script_" + page;
   contentDiv.appendChild(script);
+
+  // Navigation: Adds active class to current page
 
   document.dispatchEvent(
     new CustomEvent("route-update", { detail: { to: page, from: oldPage } })

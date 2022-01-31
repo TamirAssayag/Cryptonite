@@ -1,3 +1,5 @@
+@import "../global/include-media.scss";
+
 $circle-w: 70px;
 $circle-bg: #ffffff;
 $arrow-bg: #083142;
@@ -14,6 +16,7 @@ $anim-timing: 3s;
   top: 75%;
   transform: translateY(-50%);
   filter: url("#goo");
+
   .circle {
     background: $circle-bg;
     border-radius: 50%;

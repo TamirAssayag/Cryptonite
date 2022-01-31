@@ -1,10 +1,6 @@
 const navLinkEl = Array.from($(".nav-link"));
 const coinsList = [];
 
-$(document).ready(() => {
-  getCoinGeckoData();
-});
-
 // Navigation: Adds active class to current page
 navLinkEl.forEach((link) => {
   if (link.href === window.location.href) {
@@ -43,22 +39,3 @@ const saveLS = (key, value) => {
 const getLS = (key) => {
   return JSON.parse(localStorage.getItem(key));
 };
-
-async function getCoinGeckoData() {
-  const API_URL = "https://api.coingecko.com/api/v3/coins/list";
-  if (!getLS("coinsList")) {
-    await $.get(API_URL)
-      .then((data) => {
-        data.map((coin, index) => {
-          // push only 800 coins to the array
-          if (index < 800) {
-            coinsList.push(coin);
-          }
-        });
-        saveLS("coinsList", coinsList);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-}
