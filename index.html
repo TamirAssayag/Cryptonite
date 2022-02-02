@@ -7,6 +7,11 @@
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
       crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.5.2/rxjs.umd.min.js"
+      integrity="sha512-wBEi/LQM8Pi08xK2jwHJNCiHchHnfcJao0XVQvkTGc91Q/yvC/6q0xPf+qQr54SlG8yRbRCA8QDYrA98+0H+hg=="
+      crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
     <link
@@ -36,31 +41,9 @@
     <title>Document</title>
   </head>
   <body>
-    <div
-      class="modal fade"
-      role="dialog"
-      tabindex="-1"
-      aria-labelledby="modal"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <!-- Header -->
-          </div>
-          <div class="modal-body">
-            <!-- Body -->
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-default"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+    <div id="progressBar">
+      <div id="progressBar-item">
+        <div id="barStatus"></div>
       </div>
     </div>
     <header>
@@ -173,6 +156,13 @@
     <main>
       <div id="app" class="pt-4"></div>
     </main>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/classnames/2.3.1/index.min.js"
+      integrity="sha512-6Wf/IjsSjLaFTYco3pXM+49kC5M7jtbHzxMcdmYvwDskjv7cMcBPmJX2053aoQ+LRi8Po4ZsCtkNMf+NhXhNyQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.min.js"
       integrity="sha512-OvBgP9A2JBgiRad/mM36mkzXSXaJE9BEIENnVEmeZdITvwT09xnxLtT4twkCa8m/loMbPHsvPl0T8lRGVBwjlQ=="

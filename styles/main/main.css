@@ -246,4 +246,23 @@ input:checked + .slider:before {
 .coin-name {
   color: #727272;
 }
+
+#progressBar {
+  position: relative;
+}
+
+#progressBar-item {
+  position: fixed;
+  width: 100%;
+  height: 10px;
+  background-color: #ddd;
+  z-index: 9999;
+}
+
+#barStatus {
+  position: absolute;
+  width: 8%;
+  height: 100%;
+  background-color: #fed85d;
+}
 /*# sourceMappingURL=main.css.map */

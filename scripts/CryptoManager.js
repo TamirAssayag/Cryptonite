@@ -1,7 +1,7 @@
 const CryptoManager = {
   coins: [],
   toggledCoins: [],
-  toggle: false,
+  infoCoins: [],
 
   async fetchCoins() {
     try {
@@ -24,6 +24,10 @@ const CryptoManager = {
     return $.ajax(url);
   },
 
+  fetchCoinFromCache(coinID) {
+    return this.infoCoins.find((coin) => coin.id === coinID);
+  },
+
   findCoin(id) {
     return this.coins.find((coin) => id === coin.id);
   },
@@ -32,26 +36,26 @@ const CryptoManager = {
     return this.coins.findIndex((coin) => id === coin.id);
   },
 
-  findSelectedCrypto(id) {
+  findToggledCoin(id) {
     return this.toggledCoins.find((coin) => id === coin.id);
   },
 
-  toggleCoin() {
-    this.toggle = !this.toggle;
+  findCachedCoin(id) {
+    return this.infoCoins.find((coin) => id === coin.id);
   },
 
   async addCoin(id) {
-    const exist = this.findSelectedCrypto(id);
+    const exist = this.findToggledCoin(id);
     if (exist) return;
     const toggledCoin = this.findCoin(id);
     this.toggledCoins.push(toggledCoin);
     const res = await this.fetchCoinByID(toggledCoin.id);
     this.toggledCoins[this.toggledCoins.length - 1] = res;
-    saveLS("toggled-coins", this.toggledCoins);
+    this.saveLSToggledCoins();
   },
 
   removeCoin(id) {
-    const exist = this.findSelectedCrypto(id);
+    const exist = this.findToggledCoin(id);
     if (!exist) return;
     const toggledCoin = this.findCoin(id);
     this.toggledCoins = this.toggledCoins.filter(
@@ -60,21 +64,30 @@ const CryptoManager = {
     this.coinToggled();
   },
 
-  coinToggled() {
+  saveLSToggledCoins() {
     saveLS("toggled-coins", this.toggledCoins);
+    this.$coins.next();
   },
+  coinToggled() {
+    this.saveLSToggledCoins();
+  },
+
+  addCoinToCache(coin) {
+    this.infoCoins.push(coin);
+    saveLS("info-coins", this.infoCoins);
+  },
+
+  $coins: new rxjs.Subject(),
 };
 
 $("document").ready(() => {
-  if (getLS("coins")) {
+  if (!getLS("coins")) CryptoManager.fetchCoins();
+  else {
     CryptoManager.coins = getLS("coins");
-  } else {
-    CryptoManager.fetchCoins();
   }
 
-  if (getLS("toggled-coins")) {
+  if (getLS("toggled-coins"))
     CryptoManager.toggledCoins = getLS("toggled-coins");
-  } else {
-    CryptoManager.toggledCoins = [];
-  }
+
+  if (getLS("info-coins")) CryptoManager.infoCoins = getLS("info-coins");
 });
