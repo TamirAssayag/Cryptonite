@@ -312,7 +312,6 @@ input:checked + .slider:before {
     overflow: hidden;
     border-radius: 50%;
     transition: all 0.2s ease !important;
-    border: 2px solid transparent;
     box-shadow: -1px 0px 65px -26px rgba(0, 0, 0, 0.49);
     img {
       border-radius: 50%;
@@ -324,11 +323,6 @@ input:checked + .slider:before {
       &:hover {
         transform: scale(1.1);
       }
-    }
-    &:hover {
-      border: 2px;
-      border-style: solid dashed;
-      border-color: $primary-color;
     }
   }
 
