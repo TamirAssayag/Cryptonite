@@ -1,8 +1,14 @@
-function renderCard() {
-  const cards = CryptoManager.coins.reduce((oldCards, { name, symbol, id }) => {
-    const cardEl = $(`
+(() => {
+  const searchResultEl = $(".search-results");
+  const searchInput = $("#search-input");
+  const errorMessageDiv = $("#error-message");
+
+  function renderCard() {
+    const cards = CryptoManager.coins.reduce(
+      (oldCards, { name, symbol, id }) => {
+        const cardEl = $(`
       <div class="col-md-4">
-          <div class="card p-3 mb-2">
+          <div class="card card-coin p-3 mb-2">
               <div class="card-body">
                   <div class="d-flex justify-content-between">
                       <div class="d-flex flex-row align-items-center">
@@ -27,98 +33,97 @@ function renderCard() {
       </div>
     `);
 
-    SwitchComponent(id, cardEl);
+        SwitchComponent(id, cardEl);
 
-    oldCards.push(cardEl);
+        oldCards.push(cardEl);
 
-    return oldCards;
-  }, []);
-
-  $("#coins-row").html(cards);
-}
-
-renderCard();
-
-$(".info-btn").each((index, el) => {
-  // add click event to el
-  $(el).click((e) => {
-    const { id } = e.target.dataset;
-    try {
-      const cachedCoinedExist = CryptoManager.findCachedCoin(id);
-
-      if (!cachedCoinedExist) {
-        const coinData = CryptoManager.fetchCoinByID(id);
-
-        coinData.then((res) => {
-          CryptoManager.addCoinToCache(res);
-          progressBar(coinData.readyState);
-          renderModal(id, res);
-        });
-      } else {
-        const coin = CryptoManager.fetchCoinFromCache(id);
-        renderModal(id, coin);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  });
-});
-
-function SwitchComponent(id, parent) {
-  let switchEl = null,
-    foundToggledCoin = CryptoManager.findToggledCoin(id);
-
-  const setAttrs = () => {
-    switchEl.attr(
-      "class",
-      classNames("switch", { toggled: !!foundToggledCoin })
+        return oldCards;
+      },
+      []
     );
 
-    switchEl.find("input").prop("checked", !!foundToggledCoin);
-  };
+    $("#coins-row").html(cards);
+  }
 
-  const setListeners = () => {
-    switchEl.find("input").change((e) => {
-      const checked = e.target.checked;
-      if (checked) CryptoManager.addCoin(id);
-      else CryptoManager.removeCoin(id);
+  renderCard();
+
+  $(".info-btn").each((index, el) => {
+    $(el).click((e) => {
+      const { id } = e.target.dataset;
+      try {
+        const cachedCoinedExist = CryptoManager.findCachedCoin(id);
+
+        if (!cachedCoinedExist) {
+          const coinData = CryptoManager.fetchCoinByID(id);
+
+          coinData.then((res) => {
+            CryptoManager.addCoinToCache(res);
+            progressBar(coinData.readyState);
+            renderModal(id, res);
+          });
+        } else {
+          const coin = CryptoManager.fetchCoinFromCache(id);
+          renderModal(id, coin);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     });
-  };
+  });
 
-  const render = () => {
-    switchEl = $(`
+  function SwitchComponent(id, parent) {
+    let switchEl = null,
+      foundToggledCoin = CryptoManager.findToggledCoin(id);
+
+    const setAttrs = () => {
+      // prettier-ignore
+      switchEl.attr("class",classNames("switch", { toggled: !!foundToggledCoin }));
+
+      switchEl.find("input").prop("checked", !!foundToggledCoin);
+    };
+
+    const setListeners = () => {
+      switchEl.find("input").change((e) => {
+        const checked = e.target.checked;
+        if (checked) CryptoManager.addCoin(id);
+        else CryptoManager.removeCoin(id);
+      });
+    };
+
+    const render = () => {
+      switchEl = $(`
       <label>
         <input type="checkbox" data-id="${id}" />
         <span class="slider round"></span>
       </label>
     `);
 
-    setAttrs();
-    setListeners();
-
-    parent.find(".switch-placeholder").replaceWith(switchEl);
-  };
-
-  render();
-
-  const sub = CryptoManager.$coins.subscribe((res) => {
-    foundToggledCoin = CryptoManager.findToggledCoin(id);
-
-    if (switchEl) {
       setAttrs();
-    }
-  });
+      setListeners();
 
-  $subscribers.push(sub);
-}
+      parent.find(".switch-placeholder").replaceWith(switchEl);
+    };
 
-function renderModal(id, res) {
-  $(".modal").attr("id", `modal-${id}`); // Settings modal id to modal in the DOM
-  const modalTitle = $(`.modal-header`);
-  const modalBody = $(`#modal-${id} .modal-body`);
-  $(`#modal-${id}`).modal("show");
+    render();
 
-  const modalTitleHtml = $(`
+    const sub = CryptoManager.$coins.subscribe(() => {
+      foundToggledCoin = CryptoManager.findToggledCoin(id);
+      disableEnableSwitch(foundToggledCoin, switchEl);
+      if (switchEl) {
+        setAttrs();
+      }
+    });
+
+    $subscribers.push(sub);
+  }
+
+  function renderModal(id, res) {
+    $(".modal").attr("id", `modal-${id}`); // Settings modal id to modal in the DOM
+    const modalTitle = $(`.modal-header`);
+    const modalBody = $(`#modal-${id} .modal-body`);
+    $(`#modal-${id}`).modal("show");
+
+    const modalTitleHtml = $(`
       <div class="w-100 d-flex align-items-center justify-content-between">
         <div class="d-flex align-items-center gap-1 w-75">
           <img src="${res.image?.thumb}"></img>
@@ -133,10 +138,9 @@ function renderModal(id, res) {
       </div>
   `);
 
-  SwitchComponent(id, modalTitleHtml);
-  modalTitle.html(modalTitleHtml);
-
-  modalBody.html(`
+    SwitchComponent(id, modalTitleHtml);
+    modalTitle.html(modalTitleHtml);
+    modalBody.html(`
      <h1>
       $${res.market_data.current_price.usd?.toLocaleString()}
     </h1>
@@ -169,4 +173,76 @@ function renderModal(id, res) {
     </p>
     
   `);
-}
+  }
+
+  function searchCryptoCurrency() {
+    const searchResultListEl = $(".search-results__list");
+    if (errorMessageDiv.length) errorMessageDiv.empty();
+    if (searchInput !== "" && searchInput.val().length) {
+      searchResultListEl.empty();
+      displaySearchResults(searchInput.val());
+    } else {
+      searchResultListEl.empty();
+      searchResultEl.fadeOut(300);
+    }
+  }
+  searchInput.on("keyup", _.debounce(searchCryptoCurrency, 300));
+
+  function displaySearchResults(searchValue) {
+    const res = CryptoManager.fetchSearchCoinResult(searchValue);
+    try {
+      res.then(({ coins }) => {
+        if (coins.length) {
+          coins.forEach((coin, index) => {
+            const ulEl = $("<ul class='search-results__list'></ul>");
+            const liEl = $("<li class='search-results__list-item'></li>");
+            liEl.attr("data-id", coin.id);
+            liEl.append(`${index + 1}. ${coin.name}`);
+            ulEl.append(liEl);
+            searchResultEl.append(ulEl).fadeIn(300);
+            openSearchResultModal(coin.id);
+          });
+        } else {
+          searchResultEl.hide();
+          const errorEl = $(`<p class='text-danger'></p>`);
+          // prettier-ignore
+          const errorIcon = $(`<i class='fas fa-exclamation-triangle'></i>`);
+          const errorMessage = $(`<span class='text-danger'></span>`);
+          errorMessage.html(" No results found");
+          errorEl.append(errorIcon, errorMessage);
+          errorMessageDiv.append(errorEl);
+        }
+      });
+      return res;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      progressBar(res.readyState);
+    }
+  }
+
+  function openSearchResultModal(id) {
+    $(`.search-results__list-item[data-id=${id}]`).click((e) => {
+      const dataId = e.target.dataset.id;
+      CryptoManager.fetchCoinByID(dataId).then((res) => {
+        progressBar(res.readyState);
+        CryptoManager.addCoinToList(res); // Plaster
+        renderModal(id, res);
+        searchResultEl.fadeOut(300);
+      });
+    });
+  }
+
+  const disableEnableSwitch = (foundCoin, switchEl) => {
+    if (!foundCoin && CryptoManager.reachedMax) {
+      switchEl.find("input").attr("disabled", true);
+    } else {
+      switchEl.find("input").removeAttr("disabled");
+    }
+  };
+
+  $("document").ready(() => {
+    searchResultEl.hide();
+  });
+  // find all toggled coins switches element with toggled class
+})();

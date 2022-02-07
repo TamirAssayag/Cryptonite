@@ -1,6 +1,5 @@
 const navLinkEl = Array.from($(".nav-link"));
-const coinsList = [];
-
+let isLoading = false;
 // Navigation: Adds active class to current page
 navLinkEl.forEach((link) => {
   if (link.href === window.location.href) {
@@ -65,6 +64,22 @@ function progressBar(interval) {
   }
 }
 
+let isSnackBarShown = false;
+
+function showSnackBar(text) {
+  if (!isSnackBarShown) {
+    let snackBarEl = $("#snackbar");
+    snackBarEl.attr("class", "show");
+    snackBarEl.text(text);
+    isSnackBarShown = true;
+    setTimeout(() => {
+      snackBarEl.attr("class", "");
+      snackBarEl.text("");
+      isSnackBarShown = false;
+    }, 3000);
+  }
+}
+
 $(document).ready(() => {
   setInterval(() => localStorage.removeItem("info-coins"), 2 * 60 * 1000);
   // After two minutes, delete the local storage coin item
@@ -73,5 +88,7 @@ $(document).ready(() => {
 const $subscribers = [];
 
 document.addEventListener("route-update", () => {
-  for (const sub of $subscribers) sub.unsubscribe();
+  for (const sub of $subscribers) {
+    sub.unsubscribe();
+  }
 });

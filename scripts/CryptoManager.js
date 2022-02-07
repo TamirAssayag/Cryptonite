@@ -2,6 +2,7 @@ const CryptoManager = {
   coins: [],
   toggledCoins: [],
   infoCoins: [],
+  maxToggled: 5,
 
   async fetchCoins() {
     try {
@@ -19,6 +20,10 @@ const CryptoManager = {
     }
   },
 
+  get reachedMax() {
+    return this.toggledCoins?.length >= this.maxToggled;
+  },
+
   fetchCoinByID(coinID) {
     const url = `https://api.coingecko.com/api/v3/coins/${coinID}`;
     return $.ajax(url);
@@ -26,6 +31,10 @@ const CryptoManager = {
 
   fetchCoinFromCache(coinID) {
     return this.infoCoins.find((coin) => coin.id === coinID);
+  },
+
+  fetchSearchCoinResult(value) {
+    return $.ajax(`https://api.coingecko.com/api/v3/search?query=${value}`);
   },
 
   findCoin(id) {
@@ -36,6 +45,10 @@ const CryptoManager = {
     return this.coins.findIndex((coin) => id === coin.id);
   },
 
+  findByName(name) {
+    return this.toggledCoins.find((coin) => name === coin.name);
+  },
+
   findToggledCoin(id) {
     return this.toggledCoins.find((coin) => id === coin.id);
   },
@@ -44,13 +57,21 @@ const CryptoManager = {
     return this.infoCoins.find((coin) => id === coin.id);
   },
 
+  addCoinToList(res) {
+    this.coins.push(res);
+  },
   async addCoin(id) {
     const exist = this.findToggledCoin(id);
     if (exist) return;
+    if (this.reachedMax) {
+      showSnackBar(`You've reached the maximum of ${this.maxToggled} coins`);
+    }
     const toggledCoin = this.findCoin(id);
     this.toggledCoins.push(toggledCoin);
     const res = await this.fetchCoinByID(toggledCoin.id);
     this.toggledCoins[this.toggledCoins.length - 1] = res;
+    // prettier-ignore
+    showSnackBar(`You've successfully added ${toggledCoin.name} ${this.toggledCoins.length}/${this.maxToggled}`);
     this.saveLSToggledCoins();
   },
 
@@ -60,6 +81,9 @@ const CryptoManager = {
     const toggledCoin = this.findCoin(id);
     this.toggledCoins = this.toggledCoins.filter(
       (coin) => coin.id !== toggledCoin.id
+    );
+    showSnackBar(
+      `You've successfully removed ${toggledCoin.name} ${this.toggledCoins.length}/${this.maxToggled}`
     );
     this.coinToggled();
   },
@@ -77,6 +101,11 @@ const CryptoManager = {
     saveLS("info-coins", this.infoCoins);
   },
 
+  fetchToggledCoinsPrices(query) {
+    return $.ajax(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${query}&vs_currencies=USD&include_last_updated_at=true`
+    );
+  },
   $coins: new rxjs.Subject(),
 };
 
