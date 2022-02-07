@@ -16,6 +16,7 @@
       type: "line",
       data: generateChartData(),
       options: {
+        aspectRatio: !isMobile ? 16 / 9 : 1 / 1,
         responsive: true,
         interaction: {
           mode: "index",

@@ -1,5 +1,5 @@
 const navLinkEl = Array.from($(".nav-link"));
-let isLoading = false;
+let isMobile = window.matchMedia("(max-width: 768px)").matches;
 // Navigation: Adds active class to current page
 navLinkEl.forEach((link) => {
   if (link.href === window.location.href) {
