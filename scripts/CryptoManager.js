@@ -65,6 +65,7 @@ const CryptoManager = {
     if (exist) return;
     if (this.reachedMax) {
       showSnackBar(`You've reached the maximum of ${this.maxToggled} coins`);
+      return;
     }
     const toggledCoin = this.findCoin(id);
     this.toggledCoins.push(toggledCoin);

@@ -45,8 +45,6 @@
     $("#coins-row").html(cards);
   }
 
-  renderCard();
-
   $(".info-btn").each((index, el) => {
     $(el).click((e) => {
       const { id } = e.target.dataset;
@@ -77,7 +75,7 @@
 
     const setAttrs = () => {
       // prettier-ignore
-      switchEl.attr("class",classNames("switch", { toggled: !!foundToggledCoin }));
+      switchEl.attr("class", classNames("switch", { toggled: !!foundToggledCoin }));
 
       switchEl.find("input").prop("checked", !!foundToggledCoin);
     };
@@ -108,7 +106,14 @@
 
     const sub = CryptoManager.$coins.subscribe(() => {
       foundToggledCoin = CryptoManager.findToggledCoin(id);
-      disableEnableSwitch(foundToggledCoin, switchEl);
+
+      if (!foundToggledCoin && CryptoManager.reachedMax) {
+        switchEl.find("input").prop("disabled", true);
+        switchEl.find("input").attr("disabled", true);
+      } else {
+        switchEl.find("input").removeAttr("disabled");
+        switchEl.find("input").removeProp("disabled");
+      }
       if (switchEl) {
         setAttrs();
       }
@@ -132,22 +137,20 @@
           <span class="mb-0 line-clamp">${id}</span>
           </div>
         </div>
-
-        <div class="switch-placeholder">  </div>
-
+        <div class="switch-placeholder"></div>
       </div>
   `);
 
     SwitchComponent(id, modalTitleHtml);
     modalTitle.html(modalTitleHtml);
+
+    // prettier-ignore
     modalBody.html(`
      <h1>
       $${res.market_data.current_price.usd?.toLocaleString()}
     </h1>
     <span>
-      <u>
-        Current Market Prices:
-      </u>
+      <u>Current Market Prices:</u>
     </span>
     <ul>
       <li>
@@ -161,17 +164,8 @@
       </li>
     </ul>
     <hr/>
-    <h5>
-      Description:
-    </h5>
-    <p>
-      ${
-        res.description.en.length
-          ? res.description.en
-          : "No description available"
-      }
-    </p>
-    
+    <h5>Description:</h5>
+    <p>${res.description.en.length? res.description.en: "No description available"}</p>
   `);
   }
 
@@ -233,16 +227,33 @@
     });
   }
 
-  const disableEnableSwitch = (foundCoin, switchEl) => {
-    if (!foundCoin && CryptoManager.reachedMax) {
-      switchEl.find("input").attr("disabled", true);
-    } else {
-      switchEl.find("input").removeAttr("disabled");
-    }
-  };
-
   $("document").ready(() => {
+    renderCard();
     searchResultEl.hide();
+
+    // here we are going to check for each switch input element if the coin is
+    // toggled or not, if it is, we not going to disable it, else we disable.
+    if (CryptoManager.reachedMax) {
+      const switchEl = Array.from($(".switch"));
+      switchEl.forEach((el) => {
+        if (!$(el).hasClass("toggled")) {
+          $(el).addClass("disabled");
+          $(el).find("input").prop("disabled", true);
+          $(el).find("input").attr("disabled", true);
+        } else {
+          $(el).removeClass("disabled");
+          $(el).find("input").removeAttr("disabled");
+          $(el).find("input").removeProp("disabled");
+        }
+      });
+
+      const disabledSwitches = Array.from($(".switch.disabled"));
+      disabledSwitches.forEach((el) => {
+        $(el).click(() => {
+          // prettier-ignore
+          showSnackBar("You can't add more than 5 coins, Please remove one first!", "red");
+        });
+      });
+    }
   });
-  // find all toggled coins switches element with toggled class
 })();

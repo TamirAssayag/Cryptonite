@@ -64,25 +64,19 @@ function progressBar(interval) {
   }
 }
 
-let isSnackBarShown = false;
-
-function showSnackBar(text) {
-  if (!isSnackBarShown) {
-    let snackBarEl = $("#snackbar");
-    snackBarEl.attr("class", "show");
-    snackBarEl.text(text);
-    isSnackBarShown = true;
-    setTimeout(() => {
-      snackBarEl.attr("class", "");
-      snackBarEl.text("");
-      isSnackBarShown = false;
-    }, 3000);
-  }
-}
-
+const showSnackBar = (text, color = "#115571") => {
+  let snackBarEl = $("#snackbar");
+  snackBarEl.css("background-color", color);
+  snackBarEl.addClass("show");
+  setTimeout(() => {
+    snackBarEl.removeClass("show");
+    snackBarEl.removeAttr("class");
+  }, 3000);
+  snackBarEl.text(text);
+};
+// iffe
 $(document).ready(() => {
   setInterval(() => localStorage.removeItem("info-coins"), 2 * 60 * 1000);
-  // After two minutes, delete the local storage coin item
 });
 
 const $subscribers = [];
