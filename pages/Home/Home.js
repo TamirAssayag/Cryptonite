@@ -280,21 +280,5 @@
 
   $(document).ready(() => {
     searchResultEl.hide();
-
-    // here we are going to check for each switch input element if the coin is
-    // toggled or not, if it is, we not going to disable it, else we disable.
-
-    // const switchEl = Array.from($(".switch"));
-    // switchEl.forEach((el) => {
-    //   if (!$(el).hasClass("toggled")) {
-    //     $(el).addClass("disabled");
-    //     $(el).find("input").prop("disabled", true);
-    //     $(el).find("input").attr("disabled", true);
-    //   } else {
-    //     $(el).removeClass("disabled");
-    //     $(el).find("input").removeAttr("disabled");
-    //     $(el).find("input").removeProp("disabled");
-    //   }
-    // });
   });
 })();
