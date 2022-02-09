@@ -4,8 +4,8 @@
   const errorMessageDiv = $("#error-message");
 
   function renderCard() {
-    const cards = CryptoManager.coins.reduce(
-      (oldCards, { name, symbol, id }) => {
+    // prettier-ignore
+    const cards = CryptoManager.coins.reduce((oldCards, { name, symbol, id }) => {
         const cardEl = $(`
       <div class="col-md-4">
           <div class="card card-coin p-3 mb-2">
@@ -24,7 +24,7 @@
                       <h4 class="heading">${name}</h4>
                   </div>
               </div>
-              <div class="card-footer">
+              <div class="card-footer d-flex align-items-center">
                   <button type="button" class="btn btn-dark info-btn" data-toggle="modal" data-target="#modal-${id}" data-id="${id}">More Info</button>
 
                   <div class="switch-placeholder"></div>
@@ -44,6 +44,8 @@
 
     $("#coins-row").html(cards);
   }
+
+  renderCard();
 
   $(".info-btn").each((index, el) => {
     $(el).click((e) => {
@@ -81,11 +83,28 @@
     };
 
     const setListeners = () => {
-      switchEl.find("input").change((e) => {
-        const checked = e.target.checked;
-        if (checked) CryptoManager.addCoin(id);
-        else CryptoManager.removeCoin(id);
-      });
+      if (!foundToggledCoin && CryptoManager.reachedMax) {
+        switchEl.find("input").prop("disabled", true);
+        switchEl.addClass("disabled");
+        switchEl.each((i, el) => {
+          $(el).click((e) => {
+            if ($(e.target.parentElement).hasClass("disabled")) {
+              reachedMaxToggledModal();
+            }
+          });
+        });
+      } else {
+        switchEl.removeClass("disabled");
+        switchEl.find("input").prop("disabled", false);
+        switchEl.find("input").change((e) => {
+          const checked = e.target.checked;
+          if (checked) {
+            CryptoManager.addCoin(id);
+          } else {
+            CryptoManager.removeCoin(id);
+          }
+        });
+      }
     };
 
     const render = () => {
@@ -106,16 +125,10 @@
 
     const sub = CryptoManager.$coins.subscribe(() => {
       foundToggledCoin = CryptoManager.findToggledCoin(id);
-
-      if (!foundToggledCoin && CryptoManager.reachedMax) {
-        switchEl.find("input").prop("disabled", true);
-        switchEl.find("input").attr("disabled", true);
-      } else {
-        switchEl.find("input").removeAttr("disabled");
-        switchEl.find("input").removeProp("disabled");
-      }
+      switchEl.find("input").prop("disabled", false);
       if (switchEl) {
         setAttrs();
+        setListeners();
       }
     });
 
@@ -227,33 +240,61 @@
     });
   }
 
-  $("document").ready(() => {
-    renderCard();
+  function dismissModal() {
+    $(".modal").modal("hide");
+    $(".modal").attr("id", "");
+    $(".modal-body").empty();
+    $(".modal-header").empty();
+  }
+
+  function reachedMaxToggledModal() {
+    // prettier-ignore
+    $(".modal").attr("id", `modal-toggled_coins`); // Settings modal id to modal in the DOM
+    const modalTitle = $(`.modal-header`);
+    const modalBody = $(`.modal-body`);
+    const modalTitleHtml = $(`
+            <h3>Max Amount of Coins Reached (${CryptoManager.maxToggled})</h3>
+          `);
+    const toggledCoins = CryptoManager.toggledCoins.reduce((oldCards, res) => {
+      const modalBodyHtml = $(`
+            <div class="w-100 d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1 w-75 py-2">
+                  <img src="${res.image?.thumb}" class="me-1"></img>
+                  <div class="d-flex flex-column">
+                  <h5 class="mb-0">${res.symbol.toUpperCase()}</h5>
+                  <span class="mb-0 line-clamp">${res.id}</span>
+                </div>
+              </div>
+              <div class="switch-placeholder"></div>
+            </div>`);
+
+      modalTitle.html(modalTitleHtml);
+      SwitchComponent(res.id, modalBodyHtml);
+      oldCards.push(modalBodyHtml);
+
+      return oldCards;
+    }, []);
+    $(`#modal-toggled_coins`).modal("show");
+    modalBody.html(toggledCoins);
+  }
+
+  $(document).ready(() => {
     searchResultEl.hide();
 
     // here we are going to check for each switch input element if the coin is
     // toggled or not, if it is, we not going to disable it, else we disable.
-    if (CryptoManager.reachedMax) {
-      const switchEl = Array.from($(".switch"));
-      switchEl.forEach((el) => {
-        if (!$(el).hasClass("toggled")) {
-          $(el).addClass("disabled");
-          $(el).find("input").prop("disabled", true);
-          $(el).find("input").attr("disabled", true);
-        } else {
-          $(el).removeClass("disabled");
-          $(el).find("input").removeAttr("disabled");
-          $(el).find("input").removeProp("disabled");
-        }
-      });
 
-      const disabledSwitches = Array.from($(".switch.disabled"));
-      disabledSwitches.forEach((el) => {
-        $(el).click(() => {
-          // prettier-ignore
-          showSnackBar("You can't add more than 5 coins, Please remove one first!", "red");
-        });
-      });
-    }
+    // const switchEl = Array.from($(".switch"));
+    // switchEl.forEach((el) => {
+    //   if (!$(el).hasClass("toggled")) {
+    //     $(el).addClass("disabled");
+    //     $(el).find("input").prop("disabled", true);
+    //     $(el).find("input").attr("disabled", true);
+    //   } else {
+    //     $(el).removeClass("disabled");
+    //     $(el).find("input").removeAttr("disabled");
+    //     $(el).find("input").removeProp("disabled");
+    //   }
+    // });
   });
 })();

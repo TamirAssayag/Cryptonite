@@ -21,7 +21,7 @@ const CryptoManager = {
   },
 
   get reachedMax() {
-    return this.toggledCoins?.length >= this.maxToggled;
+    return this.toggledCoins?.length === this.maxToggled;
   },
 
   fetchCoinByID(coinID) {
@@ -59,14 +59,12 @@ const CryptoManager = {
 
   addCoinToList(res) {
     this.coins.push(res);
+    console.log({ "pushed coin": res });
   },
   async addCoin(id) {
     const exist = this.findToggledCoin(id);
     if (exist) return;
-    if (this.reachedMax) {
-      showSnackBar(`You've reached the maximum of ${this.maxToggled} coins`);
-      return;
-    }
+    if (this.reachedMax) return;
     const toggledCoin = this.findCoin(id);
     this.toggledCoins.push(toggledCoin);
     const res = await this.fetchCoinByID(toggledCoin.id);
@@ -79,12 +77,15 @@ const CryptoManager = {
   removeCoin(id) {
     const exist = this.findToggledCoin(id);
     if (!exist) return;
+    if (exist && this.findCoin(id) === undefined) {
+      this.addCoinToList(exist);
+    }
     const toggledCoin = this.findCoin(id);
     this.toggledCoins = this.toggledCoins.filter(
-      (coin) => coin.id !== toggledCoin.id
+      (coin) => coin.id !== toggledCoin?.id
     );
     showSnackBar(
-      `You've successfully removed ${toggledCoin.name} ${this.toggledCoins.length}/${this.maxToggled}`
+      `You've successfully removed ${toggledCoin?.name} ${this.toggledCoins.length}/${this.maxToggled}`
     );
     this.coinToggled();
   },
