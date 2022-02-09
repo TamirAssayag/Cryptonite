@@ -76,10 +76,10 @@ const CryptoManager = {
 
   removeCoin(id) {
     const exist = this.findToggledCoin(id);
-    if (!exist) return;
     if (exist && this.findCoin(id) === undefined) {
       this.addCoinToList(exist);
     }
+    if (!exist) return;
     const toggledCoin = this.findCoin(id);
     this.toggledCoins = this.toggledCoins.filter(
       (coin) => coin.id !== toggledCoin?.id
