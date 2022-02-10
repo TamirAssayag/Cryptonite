@@ -59,13 +59,12 @@ const CryptoManager = {
 
   addCoinToList(res) {
     this.coins.push(res);
-    console.log({ "pushed coin": res });
   },
   async addCoin(id) {
     const exist = this.findToggledCoin(id);
-    if (exist) return;
-    if (this.reachedMax) return;
+    if (exist || this.reachedMax) return;
     const toggledCoin = this.findCoin(id);
+    if (!toggledCoin.id) return;
     this.toggledCoins.push(toggledCoin);
     const res = await this.fetchCoinByID(toggledCoin.id);
     this.toggledCoins[this.toggledCoins.length - 1] = res;

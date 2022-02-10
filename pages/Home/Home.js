@@ -57,9 +57,13 @@
           const coinData = CryptoManager.fetchCoinByID(id);
 
           coinData.then((res) => {
-            CryptoManager.addCoinToCache(res);
-            progressBar(coinData.readyState);
-            renderModal(id, res);
+            if (id) {
+              CryptoManager.addCoinToCache(res);
+              progressBar(coinData.readyState);
+              renderModal(id, res);
+            } else {
+              showSnackBar("This coin currently have no information.", "red");
+            }
           });
         } else {
           const coin = CryptoManager.fetchCoinFromCache(id);
@@ -118,7 +122,10 @@
       setAttrs();
       setListeners();
 
-      parent.find(".switch-placeholder").replaceWith(switchEl);
+      if (switchEl.find("input").data("id")) {
+        // if has no data - id we won't render it.
+        parent.find(".switch-placeholder").replaceWith(switchEl);
+      }
     };
 
     render();
@@ -233,18 +240,11 @@
       const dataId = e.target.dataset.id;
       CryptoManager.fetchCoinByID(dataId).then((res) => {
         progressBar(res.readyState);
-        CryptoManager.addCoinToList(res); // Plaster
+        CryptoManager.addCoinToList(res);
         renderModal(id, res);
         searchResultEl.fadeOut(300);
       });
     });
-  }
-
-  function dismissModal() {
-    $(".modal").modal("hide");
-    $(".modal").attr("id", "");
-    $(".modal-body").empty();
-    $(".modal-header").empty();
   }
 
   function reachedMaxToggledModal() {
@@ -261,8 +261,8 @@
               <div class="d-flex align-items-center gap-1 w-75 py-2">
                   <img src="${res.image?.thumb}" class="me-1"></img>
                   <div class="d-flex flex-column">
-                  <h5 class="mb-0">${res.symbol.toUpperCase()}</h5>
-                  <span class="mb-0 line-clamp">${res.id}</span>
+                  <h5 class="mb-0">${res.symbol?.toUpperCase()}</h5>
+                  <span class="mb-0 line-clamp">${res?.id}</span>
                 </div>
               </div>
               <div class="switch-placeholder"></div>

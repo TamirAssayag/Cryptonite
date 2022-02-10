@@ -74,7 +74,7 @@ const showSnackBar = (text, color = "#115571") => {
   }, 3000);
   snackBarEl.text(text);
 };
-// iffe
+
 $(document).ready(() => {
   setInterval(() => localStorage.removeItem("info-coins"), 2 * 60 * 1000);
 });

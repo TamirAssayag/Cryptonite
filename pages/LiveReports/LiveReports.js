@@ -67,7 +67,7 @@
   function updateChart(priceObj) {
     chartObj.data.labels.push(dayjs().format("hh:mm:ss"));
     chartObj.data.datasets.forEach((dataset) => {
-      const id = CryptoManager.findByName(dataset.label).id;
+      const id = CryptoManager.findByName(dataset.label)?.id;
       const price = priceObj[id]?.usd;
       dataset.data.push(price);
     });
